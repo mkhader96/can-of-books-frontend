@@ -4,6 +4,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import axios from "axios";
 import BookFormModal from "./BookFormModal";
 import Button from "react-bootstrap/Button";
+import UpdateFormModal from "./UpdateFormModal";
 
 class BestBooks extends React.Component {
   constructor(props) {
@@ -11,7 +12,9 @@ class BestBooks extends React.Component {
     this.state = {
       books: [],
       showModal: false,
-      status:"",
+      status: "",
+      updateModal: false,
+      selectedBook: {},
     };
   }
   componentDidMount() {
@@ -45,10 +48,8 @@ class BestBooks extends React.Component {
         this.setState({
           books: response.data,
         });
-      }
-      )
+      })
       .catch((error) => console.error(error));
-
   };
   handleShow = () => {
     this.setState({
@@ -61,7 +62,47 @@ class BestBooks extends React.Component {
     });
   };
 
+// --------------------------------------------
+updateShow = (item) =>{
+  this.setState({
+    updateModal : true,
+    selectedBook : item
+  })
+  
+}
 
+
+updateClose = () =>{
+  this.setState({
+    updateModal : false
+  })
+}
+
+updateBook = (event) =>{
+  event.preventDefault();
+  let obj = {
+    title : event.target.title.value,
+    description : event.target.description.value,
+    status : event.target.status.value
+  }
+  console.log(obj);
+  const id = this.state.selectedBook._id;
+  axios
+  .put(`${process.env.REACT_APP_SERVER_URL}updateBook/${id}`, obj)
+  .then(result=>{
+    this.setState({
+      books : result.data
+    })
+    
+    this.handleClose();
+  })
+  .catch(err=>{
+    console.log(err);
+  })
+  this.updateClose();
+}
+  
+  
   deleteBook = (id) => {
     axios
       .delete(`${process.env.REACT_APP_SERVER_URL}deleteBook/${id}`)
@@ -69,14 +110,12 @@ class BestBooks extends React.Component {
         this.setState({
           books: result.data,
         });
-
       })
       .catch((err) => {
         console.log(err);
       });
   };
   render() {
-
     return (
       <>
         <h2>My Essential Lifelong Learning &amp; Formation Shelf</h2>
@@ -88,6 +127,13 @@ class BestBooks extends React.Component {
           handleClose={this.handleClose}
           addBook={this.addBook}
           handleOnChange={this.handleOnChange}
+        />
+        <UpdateFormModal
+          updateModal={this.state.updateModal}
+          updateShow={this.updateShow}
+          updateClose={this.updateClose}
+          updateBook={this.updateBook}
+          selectedBook={this.state.selectedBook}
         />
         {this.state.books.length ? (
           <Carousel fade>
@@ -103,11 +149,16 @@ class BestBooks extends React.Component {
                   <h3>{book.title}</h3>
                   <h5>Status: {book.status}</h5>
                   <p>{book.description}</p>
-                  <Button 
-                          variant="outline-secondary"
-                          size="lg"
-                          onClick={() => this.deleteBook(book._id)}
-                        >Delete Book</Button>
+                  <Button
+                    variant="outline-secondary"
+                    size="lg"
+                    onClick={() => this.deleteBook(book._id)}
+                  >
+                    Delete Book
+                  </Button>
+                  <Button variant="primary" size="lg" onClick={()=>this.updateShow(book)}>
+                    Update Book
+                  </Button>
                 </Carousel.Caption>
               </Carousel.Item>
             ))}

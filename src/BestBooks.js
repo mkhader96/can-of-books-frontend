@@ -5,6 +5,7 @@ import axios from "axios";
 import BookFormModal from "./BookFormModal";
 import Button from "react-bootstrap/Button";
 import UpdateFormModal from "./UpdateFormModal";
+import { withAuth0 } from "@auth0/auth0-react";
 
 class BestBooks extends React.Component {
   constructor(props) {
@@ -15,15 +16,17 @@ class BestBooks extends React.Component {
       status: "",
       updateModal: false,
       selectedBook: {},
+      email : this.props.auth0.user.email
     };
   }
   componentDidMount() {
     axios
-      .get(`${process.env.REACT_APP_SERVER_URL}books`)
+      .get(`${process.env.REACT_APP_SERVER_URL}books?email=${this.state.email}`)
       .then((response) => {
         this.setState({
           books: response.data,
         });
+        
       })
       .catch((error) => console.error(error));
   }
@@ -40,6 +43,7 @@ class BestBooks extends React.Component {
       title: event.target.title.value,
       description: event.target.description.value,
       status: this.state.status,
+      email: this.state.email
     };
     console.log(obj);
     axios
@@ -83,7 +87,8 @@ updateBook = (event) =>{
   let obj = {
     title : event.target.title.value,
     description : event.target.description.value,
-    status : event.target.status.value
+    status : event.target.status.value,
+    email : this.state.email
   }
   console.log(obj);
   const id = this.state.selectedBook._id;
@@ -105,7 +110,7 @@ updateBook = (event) =>{
   
   deleteBook = (id) => {
     axios
-      .delete(`${process.env.REACT_APP_SERVER_URL}deleteBook/${id}`)
+      .delete(`${process.env.REACT_APP_SERVER_URL}deleteBook/${id}?email=${this.state.email}`)
       .then((result) => {
         this.setState({
           books: result.data,
@@ -149,6 +154,7 @@ updateBook = (event) =>{
                   <h3>{book.title}</h3>
                   <h5>Status: {book.status}</h5>
                   <p>{book.description}</p>
+                  <p>Added By: {this.state.email}</p>
                   <Button
                     variant="outline-secondary"
                     size="lg"
@@ -171,4 +177,4 @@ updateBook = (event) =>{
   }
 }
 
-export default BestBooks;
+export default withAuth0(BestBooks);

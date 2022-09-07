@@ -14,11 +14,12 @@ A website designed to display 3 books that are saved in a database using mongodb
 5. Displaying the data from the database to the React website.
 
 ## Architecture
-Javascript, React, Mongoose, MongoDB, React Bootstrap
+Javascript, React, Mongoose, MongoDB, React Bootstrap, Auth0
 
 ## Change Log
 - Added add and delete books feature
 - Added update existing book information feature
+- Added authorization for the user and login and logout options
 
 ## Estimates
 - Name of feature: Creating the backend server and the database
@@ -60,6 +61,17 @@ Javascript, React, Mongoose, MongoDB, React Bootstrap
 - Finish time: 3:30 PM
 
 - Actual time needed to complete: 1.5 hours
+
+
+- Name of feature: Adding authorization and login function 
+
+- Estimate of time needed to complete: 2 hour
+
+- Start time: 2:00 PM
+
+- Finish time: 5:30 PM
+
+- Actual time needed to complete: 3 hours
 
 
 
